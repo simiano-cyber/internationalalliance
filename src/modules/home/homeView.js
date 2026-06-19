@@ -179,7 +179,7 @@ export function renderAccessView({ demoUsers, onLogin }) {
   return page;
 }
 
-export function renderHomeView({ members, currentUser, onLogout }) {
+export function renderHomeView({ members, currentUser, activeView, onNavigate, onLogout }) {
   const safeMembers = Array.isArray(members) ? members : [];
   const verifiedCount = getVerifiedCount(safeMembers);
   const page = document.createElement("div");
@@ -195,8 +195,8 @@ export function renderHomeView({ members, currentUser, onLogout }) {
       </a>
 
       <nav class="main-nav" aria-label="Navegação principal">
-        <a href="#inicio">Início</a>
-        <span class="nav-disabled" aria-disabled="true">Diretório <small>Em breve</small></span>
+        <button type="button" class="nav-action" data-view-home>Início</button>
+        <button type="button" class="nav-action" data-view-directory>Diretório</button>
         <span class="nav-disabled" aria-disabled="true">Admin <small>Em breve</small></span>
       </nav>
 
@@ -297,8 +297,6 @@ export function renderHomeView({ members, currentUser, onLogout }) {
           <h2 id="future-nav-title">Próximas áreas do MVP</h2>
         </div>
         <div class="future-nav-grid">
-          <button type="button" disabled>Login demonstrativo <span>Em breve</span></button>
-          <button type="button" disabled>Diretório internacional <span>Em breve</span></button>
           <button type="button" disabled>Perfil de membro <span>Em breve</span></button>
           <button type="button" disabled>Solicitações <span>Em breve</span></button>
           <button type="button" disabled>Painel administrativo <span>Em breve</span></button>
@@ -324,6 +322,14 @@ export function renderHomeView({ members, currentUser, onLogout }) {
   page.querySelector("[data-current-user-name]").textContent = currentUser?.name ?? "";
   page.querySelector("[data-current-user-role]").textContent =
     getRoleLabel(currentUser?.role);
+  page.querySelector("[data-view-home]").classList.toggle("is-active", activeView === "home");
+  page
+    .querySelector("[data-view-directory]")
+    .classList.toggle("is-active", activeView === "directory");
+  page.querySelector("[data-view-home]").addEventListener("click", () => onNavigate("home"));
+  page
+    .querySelector("[data-view-directory]")
+    .addEventListener("click", () => onNavigate("directory"));
   page.querySelector("[data-logout-button]").addEventListener("click", onLogout);
   populateMemberPreviewList(page.querySelector("[data-member-preview-list]"), safeMembers);
 

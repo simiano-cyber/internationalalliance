@@ -41,6 +41,20 @@ export const dataService = {
       role: member.role === "admin" ? "admin" : "member"
     }));
   },
+  getDirectoryFilters() {
+    const members = this.getMembers();
+    const countries = [...new Set(members.map((member) => member.country).filter(Boolean))];
+    const cities = [...new Set(members.map((member) => member.city).filter(Boolean))];
+    const languages = [
+      ...new Set(members.flatMap((member) => member.languages ?? []).filter(Boolean))
+    ];
+
+    return {
+      countries: countries.sort((a, b) => a.localeCompare(b, "pt-BR")),
+      cities: cities.sort((a, b) => a.localeCompare(b, "pt-BR")),
+      languages: languages.sort((a, b) => a.localeCompare(b, "pt-BR"))
+    };
+  },
   getCurrentUser() {
     const session = storage.getCurrentUser();
 

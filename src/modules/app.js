@@ -1,7 +1,9 @@
 import { dataService } from "../services/dataService.js";
+import { renderDirectoryView } from "./directory/directoryView.js";
 import { renderAccessView, renderHomeView } from "./home/homeView.js";
 
 const appRoot = document.querySelector("#app");
+let currentView = "home";
 
 function renderStartupError() {
   if (!appRoot) {
@@ -57,10 +59,28 @@ function renderApplication() {
 function renderAuthenticatedApplication(currentUser) {
   try {
     const members = dataService.getMembers();
+
+    if (currentView === "directory") {
+      const directoryFilters = dataService.getDirectoryFilters();
+
+      appRoot.replaceChildren(
+        renderDirectoryView({
+          members,
+          directoryFilters,
+          currentUser,
+          onNavigate: handleNavigate,
+          onLogout: handleLogout
+        })
+      );
+      return;
+    }
+
     appRoot.replaceChildren(
       renderHomeView({
         members,
         currentUser,
+        activeView: currentView,
+        onNavigate: handleNavigate,
         onLogout: handleLogout
       })
     );
@@ -77,12 +97,19 @@ function handleLogin(userId) {
     return false;
   }
 
+  currentView = "home";
   renderAuthenticatedApplication(user);
   return true;
 }
 
 function handleLogout() {
+  currentView = "home";
   dataService.logout();
+  renderApplication();
+}
+
+function handleNavigate(nextView) {
+  currentView = nextView === "directory" ? "directory" : "home";
   renderApplication();
 }
 
