@@ -1,5 +1,5 @@
 import { dataService } from "../services/dataService.js";
-import { renderHomeView } from "./home/homeView.js";
+import { renderAccessView, renderHomeView } from "./home/homeView.js";
 
 const appRoot = document.querySelector("#app");
 
@@ -30,13 +30,60 @@ function startApp() {
     }
 
     dataService.initialize();
-
-    const members = dataService.getMembers();
-    appRoot.replaceChildren(renderHomeView({ members }));
+    renderApplication();
   } catch (error) {
     console.error("Falha ao iniciar o ambiente demonstrativo.", error);
     renderStartupError();
   }
+}
+
+function renderApplication() {
+  const currentUser = dataService.getCurrentUser();
+
+  if (!currentUser) {
+    const demoUsers = dataService.getDemoUsers();
+    appRoot.replaceChildren(
+      renderAccessView({
+        demoUsers,
+        onLogin: handleLogin
+      })
+    );
+    return;
+  }
+
+  renderAuthenticatedApplication(currentUser);
+}
+
+function renderAuthenticatedApplication(currentUser) {
+  try {
+    const members = dataService.getMembers();
+    appRoot.replaceChildren(
+      renderHomeView({
+        members,
+        currentUser,
+        onLogout: handleLogout
+      })
+    );
+  } catch (error) {
+    console.error("Falha ao iniciar o ambiente demonstrativo.", error);
+    renderStartupError();
+  }
+}
+
+function handleLogin(userId) {
+  const user = dataService.loginDemo(userId);
+
+  if (!user) {
+    return false;
+  }
+
+  renderAuthenticatedApplication(user);
+  return true;
+}
+
+function handleLogout() {
+  dataService.logout();
+  renderApplication();
 }
 
 startApp();

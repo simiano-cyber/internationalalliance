@@ -5,6 +5,10 @@ function getVerifiedCount(members) {
   return members.filter((member) => member.verified).length;
 }
 
+function getRoleLabel(role) {
+  return role === "admin" ? "Administrador demonstrativo" : "Membro demonstrativo";
+}
+
 function createTextElement(tagName, text, className) {
   const element = document.createElement(tagName);
 
@@ -14,6 +18,45 @@ function createTextElement(tagName, text, className) {
 
   element.textContent = text == null ? "" : String(text);
   return element;
+}
+
+function createDemoUserCard(user, selectedUserId, onSelect) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "demo-user-card";
+  button.setAttribute("aria-pressed", user.id === selectedUserId ? "true" : "false");
+
+  if (user.id === selectedUserId) {
+    button.classList.add("is-selected");
+  }
+
+  const avatar = createTextElement("span", user.initials, "member-avatar");
+  avatar.setAttribute("aria-hidden", "true");
+
+  const content = document.createElement("span");
+  content.className = "demo-user-content";
+
+  const name = createTextElement("strong", user.name);
+  const location = createTextElement("small", `${user.city}, ${user.country}`);
+  const role = createTextElement("span", getRoleLabel(user.role), "status-pill");
+  role.classList.add(user.role === "admin" ? "is-pending" : "is-verified");
+
+  content.append(name, location, role);
+  button.append(avatar, content);
+
+  button.addEventListener("click", () => onSelect(user.id));
+
+  return button;
+}
+
+function populateDemoUsers(container, users, selectedUserId, onSelect) {
+  const fragment = document.createDocumentFragment();
+
+  users.forEach((user) => {
+    fragment.append(createDemoUserCard(user, selectedUserId, onSelect));
+  });
+
+  container.replaceChildren(fragment);
 }
 
 function renderMemberPreview(member) {
@@ -55,7 +98,88 @@ function populateMemberPreviewList(container, members) {
   container.replaceChildren(fragment);
 }
 
-export function renderHomeView({ members }) {
+export function renderAccessView({ demoUsers, onLogin }) {
+  const safeUsers = Array.isArray(demoUsers) ? demoUsers : [];
+  const page = document.createElement("div");
+  let selectedUserId = "";
+
+  page.innerHTML = `
+    <header class="site-header">
+      <a class="brand" href="#acesso" aria-label="International Alliance">
+        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span>
+          <strong>International Alliance</strong>
+          <small>MVP demonstrativo</small>
+        </span>
+      </a>
+    </header>
+
+    <main id="acesso">
+      <section class="demo-banner" aria-label="Aviso de acesso demonstrativo">
+        <strong>Ambiente demonstrativo</strong>
+        <span>Acesso demonstrativo — nenhuma autenticação real é realizada.</span>
+      </section>
+
+      <section class="access-section" aria-labelledby="access-title">
+        <div class="access-copy">
+          <span class="eyebrow">Entrada demonstrativa</span>
+          <h1 id="access-title">International Alliance</h1>
+          <p>
+            Escolha um perfil fictício para conhecer o ambiente interno do MVP.
+            Não existe senha, cadastro, e-mail ou autenticação de produção.
+          </p>
+        </div>
+
+        <div class="access-panel" aria-label="Seleção de perfil demonstrativo">
+          <div class="access-panel-header">
+            <h2>Selecionar perfil</h2>
+            <p>Nenhuma senha será solicitada.</p>
+          </div>
+
+          <div class="demo-user-list" data-demo-user-list></div>
+
+          <p class="form-message" data-login-message aria-live="polite"></p>
+          <button class="button primary access-submit" type="button" data-login-button disabled>
+            Entrar no ambiente demonstrativo
+          </button>
+        </div>
+      </section>
+    </main>
+  `;
+
+  const userList = page.querySelector("[data-demo-user-list]");
+  const message = page.querySelector("[data-login-message]");
+  const loginButton = page.querySelector("[data-login-button]");
+
+  function selectUser(userId) {
+    selectedUserId = userId;
+    message.textContent = "";
+    loginButton.disabled = false;
+    populateDemoUsers(userList, safeUsers, selectedUserId, selectUser);
+  }
+
+  loginButton.addEventListener("click", () => {
+    if (!selectedUserId) {
+      message.textContent = "Selecione um perfil demonstrativo para continuar.";
+      return;
+    }
+
+    const success = onLogin(selectedUserId);
+
+    if (!success) {
+      selectedUserId = "";
+      loginButton.disabled = true;
+      message.textContent = "Perfil demonstrativo inválido. Selecione outro perfil.";
+      populateDemoUsers(userList, safeUsers, selectedUserId, selectUser);
+    }
+  });
+
+  populateDemoUsers(userList, safeUsers, selectedUserId, selectUser);
+
+  return page;
+}
+
+export function renderHomeView({ members, currentUser, onLogout }) {
   const safeMembers = Array.isArray(members) ? members : [];
   const verifiedCount = getVerifiedCount(safeMembers);
   const page = document.createElement("div");
@@ -72,10 +196,18 @@ export function renderHomeView({ members }) {
 
       <nav class="main-nav" aria-label="Navegação principal">
         <a href="#inicio">Início</a>
-        <span class="nav-disabled" aria-disabled="true">Login <small>Em breve</small></span>
         <span class="nav-disabled" aria-disabled="true">Diretório <small>Em breve</small></span>
         <span class="nav-disabled" aria-disabled="true">Admin <small>Em breve</small></span>
       </nav>
+
+      <div class="active-user-panel" aria-label="Usuário ativo">
+        <span class="active-user-avatar" data-current-user-initials aria-hidden="true"></span>
+        <span>
+          <strong data-current-user-name></strong>
+          <small data-current-user-role></small>
+        </span>
+        <button class="logout-button" type="button" data-logout-button>Sair</button>
+      </div>
     </header>
 
     <main id="inicio">
@@ -188,6 +320,11 @@ export function renderHomeView({ members }) {
     `Modo ${APP_CONFIG.mode} · esquema de dados ${APP_CONFIG.dataSchemaVersion}`;
   page.querySelector("[data-footer-version]").textContent =
     `International Alliance ${APP_CONFIG.version}`;
+  page.querySelector("[data-current-user-initials]").textContent = currentUser?.initials ?? "";
+  page.querySelector("[data-current-user-name]").textContent = currentUser?.name ?? "";
+  page.querySelector("[data-current-user-role]").textContent =
+    getRoleLabel(currentUser?.role);
+  page.querySelector("[data-logout-button]").addEventListener("click", onLogout);
   populateMemberPreviewList(page.querySelector("[data-member-preview-list]"), safeMembers);
 
   return page;

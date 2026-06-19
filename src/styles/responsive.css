@@ -24,6 +24,10 @@
     flex: 0 0 auto;
   }
 
+  .active-user-panel {
+    width: 100%;
+  }
+
   .demo-banner {
     align-items: flex-start;
     flex-direction: column;
@@ -34,6 +38,11 @@
     grid-template-columns: 1fr;
     min-height: auto;
     padding-top: 10px;
+  }
+
+  .access-section {
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .benefit-grid,
@@ -83,6 +92,20 @@
 
   .member-card-header {
     flex-direction: column;
+  }
+
+  .demo-user-card {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .active-user-panel {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .logout-button {
+    width: 100%;
+    margin-left: 0;
   }
 
   .site-footer {

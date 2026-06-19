@@ -31,8 +31,53 @@ export const dataService = {
   getMemberById(id) {
     return this.getMembers().find((member) => member.id === id) ?? null;
   },
+  getDemoUsers() {
+    return this.getMembers().map((member) => ({
+      id: member.id,
+      name: member.name,
+      initials: member.initials,
+      city: member.city,
+      country: member.country,
+      role: member.role === "admin" ? "admin" : "member"
+    }));
+  },
   getCurrentUser() {
-    return storage.getCurrentUser();
+    const session = storage.getCurrentUser();
+
+    if (!session || typeof session !== "object" || typeof session.id !== "string") {
+      storage.removeCurrentUser();
+      return null;
+    }
+
+    const currentUser =
+      this.getDemoUsers().find((user) => user.id === session.id) ?? null;
+
+    if (!currentUser) {
+      storage.removeCurrentUser();
+      return null;
+    }
+
+    return currentUser;
+  },
+  loginDemo(userId) {
+    if (typeof userId !== "string" || !userId) {
+      return null;
+    }
+
+    const user = this.getDemoUsers().find((demoUser) => demoUser.id === userId);
+
+    if (!user) {
+      return null;
+    }
+
+    storage.setCurrentUser({ id: user.id });
+    return user;
+  },
+  logout() {
+    storage.removeCurrentUser();
+  },
+  isAuthenticated() {
+    return Boolean(this.getCurrentUser());
   },
   getContactRequests() {
     const data = storage.getDemoData();
