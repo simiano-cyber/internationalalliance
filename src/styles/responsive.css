@@ -51,6 +51,11 @@
   .future-nav-grid {
     grid-template-columns: 1fr;
   }
+
+  .profile-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (min-width: 720px) {
@@ -60,6 +65,11 @@
 
   .directory-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-layout {
+    grid-template-columns: minmax(240px, 0.38fr) 1fr;
+    align-items: start;
   }
 }
 
@@ -139,6 +149,16 @@
 
   .directory-card {
     padding: 16px;
+  }
+
+  .profile-summary,
+  .profile-details,
+  .not-found-panel {
+    padding: 18px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
   }
 
   .site-footer {

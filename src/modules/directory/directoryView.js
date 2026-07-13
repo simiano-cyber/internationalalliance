@@ -117,7 +117,7 @@ function createStatusPill(text, className) {
   return createTextElement("span", text, `status-pill ${className}`);
 }
 
-function createMemberCard(member) {
+function createMemberCard(member, onViewProfile) {
   const article = document.createElement("article");
   article.className = "directory-card";
 
@@ -167,18 +167,23 @@ function createMemberCard(member) {
   const action = document.createElement("button");
   action.type = "button";
   action.className = "button secondary directory-card-action";
-  action.disabled = true;
-  action.textContent = "Ver perfil — Em breve";
+  action.textContent = "Ver perfil";
+
+  if (typeof onViewProfile === "function") {
+    action.addEventListener("click", () => onViewProfile(member.id));
+  } else {
+    action.disabled = true;
+  }
 
   article.append(header, statusGroup, body, action);
   return article;
 }
 
-function populateMemberResults(container, members) {
+function populateMemberResults(container, members, onViewProfile) {
   const fragment = document.createDocumentFragment();
 
   members.forEach((member) => {
-    fragment.append(createMemberCard(member));
+    fragment.append(createMemberCard(member, onViewProfile));
   });
 
   container.replaceChildren(fragment);
@@ -189,6 +194,7 @@ export function renderDirectoryView({
   directoryFilters,
   currentUser,
   onNavigate,
+  onViewProfile,
   onLogout
 }) {
   const safeMembers = Array.isArray(members) ? members : [];
@@ -224,7 +230,7 @@ export function renderDirectoryView({
     <main>
       <section class="demo-banner" aria-label="Aviso de ambiente demonstrativo">
         <strong>Ambiente demonstrativo</strong>
-        <span>Diretório com dados fictícios e sem abertura de perfil nesta fase.</span>
+        <span>Diretório com dados fictícios e perfis demonstrativos.</span>
       </section>
 
       <section class="directory-section" aria-labelledby="directory-title">
@@ -307,7 +313,7 @@ export function renderDirectoryView({
     const filteredMembers = filterMembers(safeMembers, filters);
     summary.textContent = `${filteredMembers.length} de ${safeMembers.length} membros encontrados.`;
     emptyState.hidden = filteredMembers.length > 0;
-    populateMemberResults(results, filteredMembers);
+    populateMemberResults(results, filteredMembers, onViewProfile);
   }
 
   searchInput.addEventListener("input", () => {

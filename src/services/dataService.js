@@ -1,6 +1,7 @@
 import { APP_CONFIG } from "../config/appConfig.js";
 import { seedData } from "../data/seedData.js";
 import { createLocalStorageAdapter } from "./localStorageAdapter.js";
+import { supabaseService } from "./supabaseService.js";
 
 const storage = createLocalStorageAdapter(APP_CONFIG);
 
@@ -16,23 +17,50 @@ function shouldSeedDemoData() {
 }
 
 export const dataService = {
-  initialize() {
-    if (shouldSeedDemoData()) {
-      storage.setDemoData(cloneData(seedData));
-      storage.setDataSchemaVersion(APP_CONFIG.dataSchemaVersion);
-    }
-
-    return storage.getDemoData();
+  isSupabaseEnabled() {
+    return supabaseService.isConfigured();
   },
-  getMembers() {
+
+  async initialize() {
+    if (!this.isSupabaseEnabled()) {
+      if (shouldSeedDemoData()) {
+        storage.setDemoData(cloneData(seedData));
+        storage.setDataSchemaVersion(APP_CONFIG.dataSchemaVersion);
+      }
+      return storage.getDemoData();
+    }
+    // Supabase é inicializado automaticamente pelo import,
+    // apenas retornamos o perfil do usuário logado se houver.
+    return this.getCurrentUser();
+  },
+
+  async getMembers() {
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.getMembers();
+    }
     const data = storage.getDemoData();
     return data?.members ?? [];
   },
-  getMemberById(id) {
-    return this.getMembers().find((member) => member.id === id) ?? null;
+
+  async getMemberById(id) {
+    if (typeof id !== "string" || id.trim() === "") {
+      return null;
+    }
+
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.getMemberById(id);
+    }
+    return (await this.getMembers()).find((member) => member.id === id) ?? null;
   },
+
   getDemoUsers() {
-    return this.getMembers().map((member) => ({
+    // Retorna os usuários mockados apenas na ausência do Supabase
+    if (this.isSupabaseEnabled()) {
+      return [];
+    }
+    
+    const data = storage.getDemoData()?.members ?? [];
+    return data.map((member) => ({
       id: member.id,
       name: member.name,
       initials: member.initials,
@@ -41,8 +69,9 @@ export const dataService = {
       role: member.role === "admin" ? "admin" : "member"
     }));
   },
-  getDirectoryFilters() {
-    const members = this.getMembers();
+
+  getDirectoryFilters(membersList) {
+    const members = Array.isArray(membersList) ? membersList : [];
     const countries = [...new Set(members.map((member) => member.country).filter(Boolean))];
     const cities = [...new Set(members.map((member) => member.city).filter(Boolean))];
     const languages = [
@@ -55,7 +84,12 @@ export const dataService = {
       languages: languages.sort((a, b) => a.localeCompare(b, "pt-BR"))
     };
   },
-  getCurrentUser() {
+
+  async getCurrentUser() {
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.getCurrentUser();
+    }
+
     const session = storage.getCurrentUser();
 
     if (!session || typeof session !== "object" || typeof session.id !== "string") {
@@ -71,9 +105,16 @@ export const dataService = {
       return null;
     }
 
-    return currentUser;
+    // Carrega o perfil completo do usuário simulado para consistência de dados
+    const fullProfile = (await this.getMembers()).find((m) => m.id === currentUser.id);
+    return fullProfile ?? currentUser;
   },
-  loginDemo(userId) {
+
+  async loginDemo(userId) {
+    if (this.isSupabaseEnabled()) {
+      return null;
+    }
+
     if (typeof userId !== "string" || !userId) {
       return null;
     }
@@ -85,23 +126,59 @@ export const dataService = {
     }
 
     storage.setCurrentUser({ id: user.id });
-    return user;
+    return this.getCurrentUser();
   },
-  logout() {
-    storage.removeCurrentUser();
+
+  async login(email, password) {
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.signIn(email, password);
+    }
+    return null;
   },
-  isAuthenticated() {
-    return Boolean(this.getCurrentUser());
+
+  async signUp(email, password, profileData) {
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.signUp(email, password, profileData);
+    }
+    return null;
   },
-  getContactRequests() {
+
+  async logout() {
+    if (this.isSupabaseEnabled()) {
+      await supabaseService.signOut();
+    } else {
+      storage.removeCurrentUser();
+    }
+  },
+
+  async getPendingMembers() {
+    if (this.isSupabaseEnabled()) {
+      return supabaseService.getPendingMembers();
+    }
+    // No modo simulado, retorna os membros verificados = false
+    const members = await this.getMembers();
+    return members.filter((m) => !m.verified);
+  },
+
+  async approveMember(memberId) {
+    if (this.isSupabaseEnabled()) {
+      await supabaseService.approveMember(memberId);
+      return;
+    }
+
+    // No modo simulado, atualiza localmente no localStorage
     const data = storage.getDemoData();
-    return data?.contactRequests ?? [];
+    if (data && data.members) {
+      const member = data.members.find((m) => m.id === memberId);
+      if (member) {
+        member.verified = true;
+        storage.setDemoData(data);
+      }
+    }
   },
-  getPendingVerifications() {
-    const data = storage.getDemoData();
-    return data?.pendingVerifications ?? [];
-  },
-  resetDemoData() {
+
+  async resetDemoData() {
+    if (this.isSupabaseEnabled()) return null;
     storage.setDemoData(cloneData(seedData));
     storage.setDataSchemaVersion(APP_CONFIG.dataSchemaVersion);
     return storage.getDemoData();
