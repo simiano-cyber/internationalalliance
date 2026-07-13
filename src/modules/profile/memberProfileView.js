@@ -33,13 +33,20 @@ function createHeader({ activeView, onBackToDirectory, onHome, onLogout }) {
   brand.href = "#inicio";
   brand.setAttribute("aria-label", "International Alliance");
 
-  const brandMark = createTextElement("span", "IA", "brand-mark");
+  const brandMark = document.createElement("span");
+  brandMark.className = "brand-mark";
   brandMark.setAttribute("aria-hidden", "true");
+  
+  const brandImg = document.createElement("img");
+  brandImg.src = "./src/assets/brasao.jpg";
+  brandImg.alt = "Brasão";
+  brandImg.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: 1/1;";
+  brandMark.append(brandImg);
 
   const brandText = document.createElement("span");
   brandText.append(
     createTextElement("strong", "International Alliance"),
-    createTextElement("small", "MVP demonstrativo")
+    createTextElement("small", "Portal Maçônico")
   );
   brand.append(brandMark, brandText);
 

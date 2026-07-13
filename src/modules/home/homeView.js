@@ -101,7 +101,7 @@ export function renderAccessView({ demoUsers, onLogin, onLoginEmail, onRegister,
     page.innerHTML = `
       <header class="site-header">
         <a class="brand" href="#acesso" aria-label="International Alliance">
-          <span class="brand-mark" aria-hidden="true">IA</span>
+          <span class="brand-mark" aria-hidden="true"><img src="./src/assets/brasao.jpg" alt="Brasão" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: 1/1;" /></span>
           <span>
             <strong>International Alliance</strong>
             <small>Portal Maçônico</small>
@@ -112,6 +112,9 @@ export function renderAccessView({ demoUsers, onLogin, onLoginEmail, onRegister,
       <main id="acesso">
         <section class="access-section" aria-labelledby="access-title">
           <div class="access-copy">
+            <div class="access-logo-container" style="margin-bottom: 24px; text-align: left;">
+              <img src="./src/assets/brasao.jpg" alt="ARLS International Alliance Brasão" style="max-width: 160px; width: 100%; height: auto; border-radius: 50%; border: 3px solid var(--color-gold); box-shadow: var(--shadow-soft); aspect-ratio: 1/1; object-fit: cover;" />
+            </div>
             <span class="eyebrow">Afiliação Internacional</span>
             <h1 id="access-title">International Alliance</h1>
             <p>
@@ -367,7 +370,7 @@ export function renderAccessView({ demoUsers, onLogin, onLoginEmail, onRegister,
     page.innerHTML = `
       <header class="site-header">
         <a class="brand" href="#acesso" aria-label="International Alliance">
-          <span class="brand-mark" aria-hidden="true">IA</span>
+          <span class="brand-mark" aria-hidden="true"><img src="./src/assets/brasao.jpg" alt="Brasão" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: 1/1;" /></span>
           <span>
             <strong>International Alliance</strong>
             <small>MVP demonstrativo</small>
@@ -452,7 +455,7 @@ export function renderHomeView({ members, currentUser, activeView, onNavigate, o
   page.innerHTML = `
     <header class="site-header">
       <a class="brand" href="#inicio" aria-label="International Alliance">
-        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-mark" aria-hidden="true"><img src="./src/assets/brasao.jpg" alt="Brasão" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: 1/1;" /></span>
         <span>
           <strong>International Alliance</strong>
           <small>Portal Maçônico</small>
@@ -502,6 +505,9 @@ export function renderHomeView({ members, currentUser, activeView, onNavigate, o
 
       <section class="hero-section">
         <div class="hero-copy">
+          <div class="hero-logo-container" style="margin-bottom: 20px; text-align: left;">
+            <img src="./src/assets/brasao.jpg" alt="ARLS International Alliance Brasão" style="max-width: 140px; width: 100%; height: auto; border-radius: 50%; border: 2px solid var(--color-gold); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); aspect-ratio: 1/1; object-fit: cover;" />
+          </div>
           <span class="eyebrow">Conexão internacional com privacidade</span>
           <h1>International Alliance</h1>
           <p>

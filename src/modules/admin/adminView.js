@@ -100,10 +100,10 @@ export function renderAdminView({
   page.innerHTML = `
     <header class="site-header">
       <a class="brand" href="#inicio" aria-label="International Alliance">
-        <span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-mark" aria-hidden="true"><img src="./src/assets/brasao.jpg" alt="Brasão" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; aspect-ratio: 1/1;" /></span>
         <span>
           <strong>International Alliance</strong>
-          <small>MVP demonstrativo</small>
+          <small>Portal Maçônico</small>
         </span>
       </a>
 
