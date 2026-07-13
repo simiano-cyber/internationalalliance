@@ -142,74 +142,80 @@ export function renderAccessView({ demoUsers, onLogin, onLoginEmail, onRegister,
             </form>
 
             <!-- Formulário de Cadastro -->
-            <form class="auth-form" data-form-register hidden style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
-              <h3 style="margin-bottom: 12px; color: var(--color-navy);">Informações Pessoais</h3>
-              <div class="form-field">
-                <label for="reg-name">Nome Completo</label>
-                <input type="text" id="reg-name" required placeholder="Seu nome completo">
-              </div>
-              <div class="form-field">
-                <label for="reg-email">E-mail</label>
-                <input type="email" id="reg-email" required placeholder="seu.email@exemplo.com">
-              </div>
-              <div class="form-field">
-                <label for="reg-password">Senha</label>
-                <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" minlength="6">
-              </div>
-              <div class="form-field">
-                <label for="reg-phone">Telefone / WhatsApp</label>
-                <input type="tel" id="reg-phone" required placeholder="+55 11 99999-9999">
-              </div>
-
-              <h3 style="margin: 20px 0 12px; color: var(--color-navy);">Localização e Idiomas</h3>
-              <div class="form-field">
-                <label for="reg-country">País</label>
-                <input type="text" id="reg-country" required placeholder="Ex: Brasil">
-              </div>
-              <div class="form-field">
-                <label for="reg-city">Cidade</label>
-                <input type="text" id="reg-city" required placeholder="Ex: São Paulo">
-              </div>
-              <div class="form-field">
-                <label for="reg-languages">Idiomas que Fala (Separados por vírgula)</label>
-                <input type="text" id="reg-languages" required placeholder="Ex: Português, Inglês">
+            <form class="auth-form" data-form-register hidden style="max-height: 62vh; overflow-y: auto; padding-right: 8px;">
+              <h3 style="margin: 4px 0 8px; color: var(--color-navy); border-bottom: 1px solid var(--color-border); padding-bottom: 4px; font-size: 1.1rem;">Informações Pessoais</h3>
+              <div class="auth-form-grid">
+                <div class="form-field full-width">
+                  <label for="reg-name">Nome Completo</label>
+                  <input type="text" id="reg-name" required placeholder="Seu nome completo">
+                </div>
+                <div class="form-field">
+                  <label for="reg-email">E-mail</label>
+                  <input type="email" id="reg-email" required placeholder="seu.email@exemplo.com">
+                </div>
+                <div class="form-field">
+                  <label for="reg-password">Senha (Min. 6 chars)</label>
+                  <input type="password" id="reg-password" required placeholder="••••••••" minlength="6">
+                </div>
+                <div class="form-field full-width">
+                  <label for="reg-phone">Telefone / WhatsApp</label>
+                  <input type="tel" id="reg-phone" required placeholder="+55 11 99999-9999">
+                </div>
               </div>
 
-              <h3 style="margin: 20px 0 12px; color: var(--color-navy);">Credenciais Maçônicas</h3>
-              <div class="form-field">
-                <label for="reg-lodge">Nome da Loja</label>
-                <input type="text" id="reg-lodge" required placeholder="Ex: Aurora Azul">
-              </div>
-              <div class="form-field">
-                <label for="reg-lodge-number">Número da Loja</label>
-                <input type="text" id="reg-lodge-number" required placeholder="Ex: 1234">
-              </div>
-              <div class="form-field">
-                <label for="reg-obedience">Potência / Obediência Maçônica</label>
-                <input type="text" id="reg-obedience" required placeholder="Ex: Grande Oriente do Brasil">
-              </div>
-              <div class="form-field">
-                <label for="reg-cim">CIM (Código de Identificação Maçônica)</label>
-                <input type="text" id="reg-cim" required placeholder="Ex: 987654">
-              </div>
-              <div class="form-field">
-                <label for="reg-degree">Grau Maçônico</label>
-                <select id="reg-degree">
-                  <option value="Aprendiz">Aprendiz</option>
-                  <option value="Companheiro">Companheiro</option>
-                  <option value="Mestre Maçom" selected>Mestre Maçom</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label for="reg-phrase">Escreva a Frase com a Palavra Semestral</label>
-                <input type="text" id="reg-phrase" required placeholder="Digite a frase para validação do ritual">
-              </div>
-              <div class="form-field">
-                <label for="reg-bio">Breve Apresentação (Bio)</label>
-                <textarea id="reg-bio" placeholder="Fale um pouco sobre sua trajetória profissional e maçônica..."></textarea>
+              <h3 style="margin: 18px 0 8px; color: var(--color-navy); border-bottom: 1px solid var(--color-border); padding-bottom: 4px; font-size: 1.1rem;">Localização e Idiomas</h3>
+              <div class="auth-form-grid">
+                <div class="form-field">
+                  <label for="reg-country">País</label>
+                  <input type="text" id="reg-country" required placeholder="Ex: Brasil">
+                </div>
+                <div class="form-field">
+                  <label for="reg-city">Cidade</label>
+                  <input type="text" id="reg-city" required placeholder="Ex: São Paulo">
+                </div>
+                <div class="form-field full-width">
+                  <label for="reg-languages">Idiomas que Fala (Separados por vírgula)</label>
+                  <input type="text" id="reg-languages" required placeholder="Ex: Português, Inglês">
+                </div>
               </div>
 
-              <h3 style="margin: 20px 0 12px; color: var(--color-navy);">Privacidade do Perfil</h3>
+              <h3 style="margin: 18px 0 8px; color: var(--color-navy); border-bottom: 1px solid var(--color-border); padding-bottom: 4px; font-size: 1.1rem;">Credenciais Maçônicas</h3>
+              <div class="auth-form-grid">
+                <div class="form-field">
+                  <label for="reg-lodge">Nome da Loja</label>
+                  <input type="text" id="reg-lodge" required placeholder="Ex: Aurora Azul">
+                </div>
+                <div class="form-field">
+                  <label for="reg-lodge-number">Número da Loja</label>
+                  <input type="text" id="reg-lodge-number" required placeholder="Ex: 1234">
+                </div>
+                <div class="form-field full-width">
+                  <label for="reg-obedience">Potência / Obediência Maçônica</label>
+                  <input type="text" id="reg-obedience" required placeholder="Ex: Grande Oriente do Brasil">
+                </div>
+                <div class="form-field">
+                  <label for="reg-cim">CIM (Membro ID)</label>
+                  <input type="text" id="reg-cim" required placeholder="Ex: 987654">
+                </div>
+                <div class="form-field">
+                  <label for="reg-degree">Grau Maçônico</label>
+                  <select id="reg-degree">
+                    <option value="Aprendiz">Aprendiz</option>
+                    <option value="Companheiro">Companheiro</option>
+                    <option value="Mestre Maçom" selected>Mestre Maçom</option>
+                  </select>
+                </div>
+                <div class="form-field full-width">
+                  <label for="reg-phrase">Escreva a Frase com a Palavra Semestral</label>
+                  <input type="text" id="reg-phrase" required placeholder="Digite a frase para validação do ritual">
+                </div>
+                <div class="form-field full-width">
+                  <label for="reg-bio">Breve Apresentação (Bio)</label>
+                  <textarea id="reg-bio" placeholder="Fale um pouco sobre sua trajetória profissional e maçônica..."></textarea>
+                </div>
+              </div>
+
+              <h3 style="margin: 18px 0 8px; color: var(--color-navy); border-bottom: 1px solid var(--color-border); padding-bottom: 4px; font-size: 1.1rem;">Privacidade do Perfil</h3>
               <div class="checkbox-field" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
                 <label style="display: flex; gap: 8px; font-weight: normal;">
                   <input type="checkbox" id="reg-priv-lodge" checked> Mostrar minha Loja no diretório
@@ -225,6 +231,7 @@ export function renderAccessView({ demoUsers, onLogin, onLoginEmail, onRegister,
               <p class="form-message" data-register-message aria-live="polite"></p>
               <button class="button primary access-submit" type="submit">Cadastrar Candidatura</button>
             </form>
+
           </div>
         </section>
       </main>
